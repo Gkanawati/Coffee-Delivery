@@ -1,6 +1,5 @@
 import React from 'react';
 import { ActionsContainer, DialogTextContainer, ModalBackdrop, ModalButton, ModalContent } from './styles';
-import { X } from 'phosphor-react';
 
 type CustomModalProps = {
   isOpen: boolean;
