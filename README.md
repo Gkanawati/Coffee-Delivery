@@ -11,7 +11,9 @@ Aplicação para gerenciar um carrinho de compras de uma cafeteria fictícia, qu
 - Exibir o total de itens no carrinho no Header
 - Exibir o valor total da soma de itens no carrinho multiplicados pelo valor
 
-Frontend construído com React e estilizado com styled-components.
+O frontend foi construído com React e estilizado com styled-components.
+
+O destaque dessa aplicação é o seu layout. Uma funcionalidade adicional desenvolvida, foi a busca do endereço utilizando o CEP via API na página de checkout.
 
 ## 💡 Bibliotecas Utilizadas:
 
