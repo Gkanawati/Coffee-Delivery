@@ -54,7 +54,7 @@ const initialFormValues: OrderData = {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { cart, productsPrice, deliveryPrice, totalPrice, createOrder } = useContext(OrdersContext);
+  const { cart, productsPrice, deliveryPrice, totalPrice, createOrder, calculateDeliveryPriceByState } = useContext(OrdersContext);
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('creditCard');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -108,6 +108,7 @@ export default function Checkout() {
           setValue('state', getAddressResult.uf, { shouldDirty: true });
           setModalTitle('Endereço encontrado!');
           handleOpenModal();
+          calculateDeliveryPriceByState(getAddressResult.uf);
         } else {
           setModalTitle('CEP não encontrado');
           handleOpenModal();
@@ -346,7 +347,7 @@ export default function Checkout() {
                     </div>
                     <div>
                       <span>Entrega</span>
-                      <span>{formatCurrency(deliveryPrice)}</span>
+                      <span>{deliveryPrice === 0 ? 'Grátis' : formatCurrency(deliveryPrice)}</span>
                     </div>
 
                     <div>

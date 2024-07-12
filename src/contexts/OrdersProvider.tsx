@@ -39,6 +39,7 @@ interface OrdersContextProps {
   productsPrice: number;
   deliveryPrice: number;
   totalPrice: number;
+  calculateDeliveryPriceByState: (state: string) => void;
 }
 
 export const OrdersContext = createContext({} as OrdersContextProps);
@@ -72,7 +73,7 @@ export function OrdersProvider({ children }: OrdersContextProviderProps) {
 
     const updatedTotal = updatedTotalPrice + deliveryPrice;
     setTotalPrice(updatedTotal);
-  }, [cart]);
+  }, [cart, deliveryPrice]);
 
   function addCoffeeToCart(newCartItem: CoffeeItemProps) {
     const existingCartItem = cart.find(item => item.id === newCartItem.id);
@@ -124,6 +125,14 @@ export function OrdersProvider({ children }: OrdersContextProviderProps) {
     return orders.find(order => order.id === id);
   }
 
+  function calculateDeliveryPriceByState(state: string) {
+    if (state === "SP") {
+      setDeliveryPrice(0);
+    } else {
+      setDeliveryPrice(15);
+    }
+  }
+
   return (
     <OrdersContext.Provider value={{
       cart,
@@ -134,7 +143,8 @@ export function OrdersProvider({ children }: OrdersContextProviderProps) {
       createOrder,
       getOrderById,
       productsPrice,
-      totalPrice
+      totalPrice,
+      calculateDeliveryPriceByState
     }}>
       {children}
     </OrdersContext.Provider>
