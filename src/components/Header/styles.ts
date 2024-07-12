@@ -15,6 +15,12 @@ export const HeaderContainer = styled.header`
       padding: 2rem 1rem;
     }
   }
+
+  @media (max-width: 400px) { 
+    & {
+      padding: 2rem 0.5rem;
+    }
+  }
 `
 
 export const HeaderContent = styled.div`
@@ -35,6 +41,10 @@ export const HeaderContent = styled.div`
   @media (max-width: 575.98px) { 
     & {
       padding: 0rem 1rem;
+    }
+
+    img {
+      max-width: 80px;
     }
   }
 `
@@ -58,8 +68,14 @@ export const LocationButton = styled.a`
 
   span {
     color: ${props => props.theme['purple-dark']};
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 400;
+  }
+
+  @media (max-width: 400px) {
+    span {
+      font-size: 0.75rem;
+    }
   }
 `;
 

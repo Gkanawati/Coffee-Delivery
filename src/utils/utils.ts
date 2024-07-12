@@ -52,3 +52,7 @@ export function unmaskValue(value: string) {
   
   return unmaskedValue;
 };
+
+export function truncateText(cityName: string, maxLength: number): string {
+  return cityName.length > maxLength ? `${cityName.substring(0, maxLength)}...` : cityName;
+}

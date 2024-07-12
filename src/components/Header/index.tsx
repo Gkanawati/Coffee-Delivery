@@ -13,8 +13,11 @@ import logo from '../../assets/Logo.svg'
 import { Link } from 'react-router-dom'
 import { useContext, useEffect, useState } from 'react'
 import { OrderProps, OrdersContext } from '../../contexts/OrdersProvider'
+import { truncateText } from '../../utils/utils'
 
 export function Header() {
+  const isMobile = window.innerWidth <= 768;
+
   const { cart, orders } = useContext(OrdersContext);
 
   const isCartEmpty = cart.length === 0;
@@ -38,8 +41,12 @@ export function Header() {
         <ActionsHeader>
           <LocationButton href='#'>
             <MapPin weight='fill' size={22} />
-            {lastOrder.address
+            {/* {lastOrder.address
               ? <span>{lastOrder.address?.city}, {lastOrder.address?.state}</span>
+              : <span>São Paulo, SP</span>
+            } */}
+            {lastOrder.address
+              ? <span>{isMobile ? truncateText(lastOrder.address.city, 15) : lastOrder.address.city}, {lastOrder.address.state}</span>
               : <span>São Paulo, SP</span>
             }
           </LocationButton>
