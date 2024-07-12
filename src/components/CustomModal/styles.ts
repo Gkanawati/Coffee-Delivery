@@ -29,6 +29,14 @@ export const ModalContent = styled.div`
   padding: 2rem;
   gap: 2rem;
 
+  @media (min-width: 768px) {
+    min-width: 350px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
   h4 {
     font-size: 1.1rem;
     font-weight: 500;
