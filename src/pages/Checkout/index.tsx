@@ -23,7 +23,7 @@ import {
 } from './styles';
 import CoffeeCartItem from './components';
 import { OrderProps, OrdersContext } from '../../contexts/OrdersProvider';
-import { formatCurrency } from '../../utils/utils';
+import { formatCurrency, validateCEP } from '../../utils/utils';
 import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { maskCEP, unmaskValue } from '../../utils/utils';
@@ -91,7 +91,6 @@ export default function Checkout() {
 
     clearErrors('cep');
     clearErrors('street');
-    clearErrors('number');
     clearErrors('neighborhood');
     clearErrors('city');
     clearErrors('state');
@@ -185,7 +184,7 @@ export default function Checkout() {
                   <Controller
                     name='cep'
                     control={control}
-                    rules={{ required: true }}
+                    rules={{ required: 'Campo obrigatório' }}
                     render={({ field: { ref, onChange, ...field } }) => (
                       <StyledField
                         {...field}
@@ -197,10 +196,17 @@ export default function Checkout() {
                           const unmaskedValue = unmaskValue(e.target.value);
                           fillAddressInputs(unmaskedValue);
                         }}
+                        onBlur={(e) => {
+                          if (!validateCEP(e.target.value)) {
+                            setError("cep", { type: "invalid", message: "CEP inválido." })
+                          } else {
+                            clearErrors("cep")
+                          }
+                        }}
                       />
                     )}
                   />
-                  {errors.cep && <span>{errors.cep.message}</span>}
+                  {errors.cep && <HelperText>{errors.cep.message}</HelperText>}
                 </InputContainer>
 
                 <InputContainer style={{ flex: 1, width: '100%' }}>

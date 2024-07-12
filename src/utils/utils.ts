@@ -42,6 +42,9 @@ export function maskCEP(value: string) {
   return maskedCEP; // Preenche com underline caso não tenha 8 dígitos ainda
 };
 
+export function validateCEP(value: string) {
+  return ((value.replace(/\D/g, '')).length === 8) ? true : false;
+}
 
 export function unmaskValue(value: string) {
   if (!value) {
