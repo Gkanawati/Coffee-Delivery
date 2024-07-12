@@ -2,6 +2,8 @@ import { ShoppingCart } from 'phosphor-react';
 import { useContext, useEffect, useState } from 'react';
 import { OrdersContext } from '../../contexts/OrdersProvider';
 import { ActionsContainer, AmountContainer, BuyContainer, CoffeeContainer, CoffeeDescription, CoffeeTitle, IconButton, MinusIcon, PlusIcon, PriceContainer, PriceText, ShopButton, TagItem, TagsContainer } from './styles'
+import CustomModal from '../CustomModal';
+import { useNavigate } from 'react-router-dom';
 
 export interface CoffeeItemProps {
   id: number;
@@ -18,8 +20,11 @@ export interface CoffeeComponentProps {
 }
 
 export default function CoffeeItem({ item }: CoffeeComponentProps) {
+  const navigate = useNavigate();
+
   const [order, setOrder] = useState(item);
   const [amount, setAmount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { id, title, description, price, srcImg, tags } = order;
 
@@ -35,10 +40,16 @@ export default function CoffeeItem({ item }: CoffeeComponentProps) {
     setOrder(prevOrder => ({ ...prevOrder, amount: prevOrder.amount > 0 ? prevOrder.amount - 1 : 0 }));
   }
 
+  const handleGoToCart = () => {
+    setIsModalOpen(false);
+    navigate('/checkout');
+  };
+
   function handleAddCoffeeToCart() {
     if (amount === 0) return;
 
     addCoffeeToCart(order);
+    setIsModalOpen(true);
   }
 
   useEffect(() => {
@@ -93,6 +104,15 @@ export default function CoffeeItem({ item }: CoffeeComponentProps) {
           </ShopButton>
         </ActionsContainer>
       </BuyContainer>
+
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        goAction={handleGoToCart}
+        title='Produto adicionado ao carrinho!'
+        description="Deseja finalizar a compra ou continuar comprando?"
+        cancelText='Continuar Comprando'
+      />
     </CoffeeContainer>
   )
 }
