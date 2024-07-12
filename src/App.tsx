@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import { OrdersProvider } from './contexts/OrdersProvider'
 import Router from './Router'
@@ -9,9 +9,9 @@ function App() {
   return (
     <OrdersProvider>
       <ThemeProvider theme={defaultTheme}>
-        <BrowserRouter>
+        <HashRouter>
           <Router />
-        </BrowserRouter>
+        </HashRouter>
         <GlobalStyle />
       </ThemeProvider>
     </OrdersProvider>
