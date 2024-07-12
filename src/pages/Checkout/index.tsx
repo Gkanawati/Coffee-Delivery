@@ -65,7 +65,7 @@ export default function Checkout() {
     reset,
     control,
     formState: { dirtyFields, errors },
-  } = useForm();
+  } = useForm({ defaultValues: initialFormValues });
 
   async function fillAddressInputs(cep: string) {
     if (!cep || cep.length < 8) {
