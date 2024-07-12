@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export const HeaderContainer = styled.header`
@@ -66,7 +67,7 @@ export const CartContainer = styled.div`
 
 `;
 
-export const CartButton = styled.a`
+export const CartButton = styled(Link)`
   position: relative;
   padding: 8px;
   gap: 4px;

@@ -44,7 +44,7 @@ export function Header() {
             }
           </LocationButton>
 
-          <CartButton href="/checkout">
+          <CartButton to="/checkout">
             <ShoppingCart weight="fill" size={22} />
             {!isCartEmpty &&
               <Counter>
