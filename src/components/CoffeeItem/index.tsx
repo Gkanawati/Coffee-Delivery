@@ -109,6 +109,7 @@ export default function CoffeeItem({ item }: CoffeeComponentProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         goAction={handleGoToCart}
+        goActionText='Ir para o Carrinho'
         title='Produto adicionado ao carrinho!'
         description="Deseja finalizar a compra ou continuar comprando?"
         cancelText='Continuar Comprando'

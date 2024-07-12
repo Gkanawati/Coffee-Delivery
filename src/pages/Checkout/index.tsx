@@ -26,6 +26,7 @@ import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import { maskCEP, unmaskValue } from '../../utils/utils';
 import { useNavigate } from 'react-router-dom';
+import CustomModal from '../../components/CustomModal';
 
 interface OrderData {
   cep: string;
@@ -54,6 +55,8 @@ export default function Checkout() {
   const { cart, productsPrice, deliveryPrice, totalPrice, createOrder } = useContext(OrdersContext);
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('creditCard');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
 
   const {
     register,
@@ -66,6 +69,14 @@ export default function Checkout() {
     control,
     formState: { dirtyFields, errors },
   } = useForm({ defaultValues: initialFormValues });
+
+  function handleOpenModal() {
+    setIsModalOpen(true);
+  }
+
+  function handleCloseModal() {
+    setIsModalOpen(false);
+  }
 
   async function fillAddressInputs(cep: string) {
     if (!cep || cep.length < 8) {
@@ -87,14 +98,17 @@ export default function Checkout() {
           setValue('neighborhood', getAddressResult.bairro, { shouldDirty: true });
           setValue('city', getAddressResult.localidade, { shouldDirty: true });
           setValue('state', getAddressResult.uf, { shouldDirty: true });
-          alert('CEP encontrado');
+          setModalTitle('Endereço encontrado!');
+          handleOpenModal();
         } else {
-          alert('CEP não encontrado');
+          setModalTitle('CEP não encontrado');
+          handleOpenModal();
         }
       }
     } catch (error) {
       console.log('fillAddressInputs ~ error:', error);
-      alert('Erro ao buscar endereço');
+      setModalTitle('Erro ao buscar Endereço');
+      handleOpenModal();
     }
   }
 
@@ -123,201 +137,211 @@ export default function Checkout() {
     setTimeout(() => {
       try {
         const orderId = createOrder(formattedOrder);
-        alert('Pedido realizado com sucesso!');
         navigate(`/success/${orderId}`);
         reset();
       } catch (error) {
         console.log('onSubmit ~ error:', error);
-        alert('Erro ao realizar pedido');
+        setModalTitle('Erro ao realizar pedido');
+        handleOpenModal();
       }
     }, 500);
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <CheckoutContainer>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CheckoutContainer>
 
-        <AddressContainer>
-          <HeadTitle>
-            Complete seu pedido
-          </HeadTitle>
+          <AddressContainer>
+            <HeadTitle>
+              Complete seu pedido
+            </HeadTitle>
 
-          <CardContainer>
-            <TitleForm>
-              <MapPinLine color='#C47F17' size={22} />
-              <div>
-                <h4>
-                  Endereço de Entrega
-                </h4>
+            <CardContainer>
+              <TitleForm>
+                <MapPinLine color='#C47F17' size={22} />
+                <div>
+                  <h4>
+                    Endereço de Entrega
+                  </h4>
 
-                <p>
-                  Informe o endereço onde deseja receber seu pedido
-                </p>
-              </div>
-            </TitleForm>
+                  <p>
+                    Informe o endereço onde deseja receber seu pedido
+                  </p>
+                </div>
+              </TitleForm>
 
-            <FormStyled>
-              <Controller
-                name='cep'
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { ref, onChange, ...field } }) => (
+              <FormStyled>
+                <Controller
+                  name='cep'
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { ref, onChange, ...field } }) => (
+                    <StyledField
+                      {...field}
+                      style={{ width: 'fit-content' }}
+                      placeholder="CEP"
+                      onChange={(e: { target: { value: string; }; }) => {
+                        setValue('cep', maskCEP(e.target.value), { shouldDirty: true })
+                        const unmaskedValue = unmaskValue(e.target.value);
+                        fillAddressInputs(unmaskedValue);
+                      }}
+                    />
+                  )}
+                />
+
+                <StyledField
+                  placeholder="Rua"
+                  {...register('street', { required: 'Campo obrigatório' })}
+                />
+
+                <div>
                   <StyledField
-                    {...field}
-                    style={{ width: 'fit-content' }}
-                    placeholder="CEP"
-                    onChange={(e: { target: { value: string; }; }) => {
-                      setValue('cep', maskCEP(e.target.value), { shouldDirty: true })
-                      const unmaskedValue = unmaskValue(e.target.value);
-                      fillAddressInputs(unmaskedValue);
-                    }}
+                    type="number"
+                    placeholder="Número"
+                    {...register('number', { required: 'Campo obrigatório' })}
                   />
-                )}
-              />
 
-              <StyledField
-                placeholder="Rua"
-                {...register('street', { required: 'Campo obrigatório' })}
-              />
+                  <ContainerInputWithText>
+                    <ComplementField
+                      id="complement"
+                      placeholder="Complemento"
+                      {...register('complement')}
+                    />
+                    <OptionalField>
+                      <span>Opcional</span>
+                    </OptionalField>
+                  </ContainerInputWithText>
+                </div>
 
-              <div>
-                <StyledField
-                  type="number"
-                  placeholder="Número"
-                  {...register('number', { required: 'Campo obrigatório' })}
-                />
-
-                <ContainerInputWithText>
-                  <ComplementField
-                    id="complement"
-                    placeholder="Complemento"
-                    {...register('complement')}
+                <div>
+                  <StyledField
+                    id="neighborhood"
+                    placeholder="Bairro"
+                    {...register('neighborhood', { required: 'Campo obrigatório' })}
                   />
-                  <OptionalField>
-                    <span>Opcional</span>
-                  </OptionalField>
-                </ContainerInputWithText>
-              </div>
 
-              <div>
-                <StyledField
-                  id="neighborhood"
-                  placeholder="Bairro"
-                  {...register('neighborhood', { required: 'Campo obrigatório' })}
-                />
+                  <StyledField
+                    style={{ flex: 1 }}
+                    id="city"
+                    placeholder="Cidade"
+                    {...register('city', { required: 'Campo obrigatório' })}
+                  />
 
-                <StyledField
-                  style={{ flex: 1 }}
-                  id="city"
-                  placeholder="Cidade"
-                  {...register('city', { required: 'Campo obrigatório' })}
-                />
+                  <StyledField style={{ maxWidth: 60 }}
+                    id="state"
+                    placeholder="UF"
+                    {...register('state', { required: 'Campo obrigatório' })}
+                  />
+                </div>
+              </FormStyled>
+            </CardContainer>
 
-                <StyledField style={{ maxWidth: 60 }}
-                  id="state"
-                  placeholder="UF"
-                  {...register('state', { required: 'Campo obrigatório' })}
-                />
-              </div>
-            </FormStyled>
-          </CardContainer>
+            <CardContainer>
+              <TitleForm>
+                <CurrencyDollar color='#8047F8' size={22} />
+                <div>
+                  <h4>
+                    Pagamento
+                  </h4>
 
-          <CardContainer>
-            <TitleForm>
-              <CurrencyDollar color='#8047F8' size={22} />
-              <div>
-                <h4>
-                  Pagamento
-                </h4>
+                  <p>
+                    O pagamento é feito na entrega. Escolha a forma que deseja pagar
+                  </p>
+                </div>
+              </TitleForm>
 
-                <p>
-                  O pagamento é feito na entrega. Escolha a forma que deseja pagar
-                </p>
-              </div>
-            </TitleForm>
+              <PaymentContainer>
+                <PaymentOptionButton
+                  type="button"
+                  selected={selectedPaymentMethod === "creditCard"}
+                  onClick={() => {
+                    setValue('paymentMethod', 'creditCard');
+                    setSelectedPaymentMethod('creditCard');
+                  }}
+                >
+                  <CreditCard color='#8047F8' size={16} />
+                  Cartão de Crédito
+                </PaymentOptionButton>
 
-            <PaymentContainer>
-              <PaymentOptionButton
-                type="button"
-                selected={selectedPaymentMethod === "creditCard"}
-                onClick={() => {
-                  setValue('paymentMethod', 'creditCard');
-                  setSelectedPaymentMethod('creditCard');
-                }}
-              >
-                <CreditCard color='#8047F8' size={16} />
-                Cartão de Crédito
-              </PaymentOptionButton>
+                <PaymentOptionButton
+                  type="button"
+                  selected={selectedPaymentMethod === "debitCard"}
+                  onClick={() => {
+                    setValue('paymentMethod', 'debitCard')
+                    setSelectedPaymentMethod('debitCard');
+                  }}
+                >
+                  <Bank color='#8047F8' size={16} />
+                  Cartão de Débito
+                </PaymentOptionButton>
 
-              <PaymentOptionButton
-                type="button"
-                selected={selectedPaymentMethod === "debitCard"}
-                onClick={() => {
-                  setValue('paymentMethod', 'debitCard')
-                  setSelectedPaymentMethod('debitCard');
-                }}
-              >
-                <Bank color='#8047F8' size={16} />
-                Cartão de Débito
-              </PaymentOptionButton>
+                <PaymentOptionButton
+                  type="button"
+                  selected={selectedPaymentMethod === "money"}
+                  onClick={() => {
+                    setValue('paymentMethod', 'money')
+                    setSelectedPaymentMethod('money');
+                  }}
+                >
+                  <Money color='#8047F8' size={16} />
+                  Dinheiro
+                </PaymentOptionButton>
+              </PaymentContainer>
+            </CardContainer>
+          </AddressContainer>
 
-              <PaymentOptionButton
-                type="button"
-                selected={selectedPaymentMethod === "money"}
-                onClick={() => {
-                  setValue('paymentMethod', 'money')
-                  setSelectedPaymentMethod('money');
-                }}
-              >
-                <Money color='#8047F8' size={16} />
-                Dinheiro
-              </PaymentOptionButton>
-            </PaymentContainer>
-          </CardContainer>
-        </AddressContainer>
+          <OrderContainer>
+            <HeadTitle>
+              Cafés Selecionados
+            </HeadTitle>
 
-        <OrderContainer>
-          <HeadTitle>
-            Cafés Selecionados
-          </HeadTitle>
+            <CoffeeCard>
+              {cart.length
+                ?
+                <>
+                  {cart.map(item => (
+                    <CoffeeCartItem item={item} />
+                  ))}
 
-          <CoffeeCard>
-            {cart.length
-              ?
-              <>
-                {cart.map(item => (
-                  <CoffeeCartItem item={item} />
-                ))}
+                  <ResumeOrderValues>
+                    <div>
+                      <span>Total de items</span>
+                      <span>{formatCurrency(productsPrice)}</span>
+                    </div>
+                    <div>
+                      <span>Entrega</span>
+                      <span>{formatCurrency(deliveryPrice)}</span>
+                    </div>
 
-                <ResumeOrderValues>
-                  <div>
-                    <span>Total de items</span>
-                    <span>{formatCurrency(productsPrice)}</span>
-                  </div>
-                  <div>
-                    <span>Entrega</span>
-                    <span>{formatCurrency(deliveryPrice)}</span>
-                  </div>
+                    <div>
+                      <h3>Total</h3>
+                      <h3>{formatCurrency(totalPrice)}</h3>
+                    </div>
+                  </ResumeOrderValues>
 
-                  <div>
-                    <h3>Total</h3>
-                    <h3>{formatCurrency(totalPrice)}</h3>
-                  </div>
-                </ResumeOrderValues>
+                  <SubmitButton type="submit">
+                    Confirmar Pedido
+                  </SubmitButton>
+                </>
+                :
+                <EmptyCartContainer>
+                  <p>Carrinho Vazio!</p>
+                  <a href="/">Clique aqui para ver nosso catálogo de cafés!</a>
+                </EmptyCartContainer>
+              }
+            </CoffeeCard>
+          </OrderContainer>
+        </CheckoutContainer>
+      </form>
 
-                <SubmitButton type="submit">
-                  Confirmar Pedido
-                </SubmitButton>
-              </>
-              :
-              <EmptyCartContainer>
-                <p>Carrinho Vazio!</p>
-                <a href="/">Clique aqui para ver nosso catálogo de cafés!</a>
-              </EmptyCartContainer>
-            }
-          </CoffeeCard>
-        </OrderContainer>
-      </CheckoutContainer>
-    </form>
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        goAction={handleCloseModal}
+        title={modalTitle}
+        hideCancelButton
+      />
+    </>
   );
 }

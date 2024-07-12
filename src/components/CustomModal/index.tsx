@@ -1,16 +1,19 @@
 import React from 'react';
 import { ActionsContainer, DialogTextContainer, ModalBackdrop, ModalButton, ModalContent } from './styles';
+import { X } from 'phosphor-react';
 
 type CustomModalProps = {
   isOpen: boolean;
   title: string;
   description?: string;
+  goActionText?: string;
   cancelText?: string;
   onClose: () => void;
   goAction: () => void;
+  hideCancelButton?: boolean;
 };
 
-const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, goAction, title, description, cancelText = 'Cancelar' }) => {
+const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, goAction, title, description, goActionText, cancelText = 'Cancelar', hideCancelButton }) => {
   if (!isOpen) return null;
 
   return (
@@ -18,16 +21,18 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, goAction, ti
       <ModalContent>
         <DialogTextContainer>
           <h4>{title}</h4>
-          <p>{description}</p>
+          {description && <p>{description}</p>}
         </DialogTextContainer>
 
         <ActionsContainer>
-          <ModalButton onClick={onClose}>
-            {cancelText ?? 'Cancelar'}
-          </ModalButton>
+          {!hideCancelButton &&
+            <ModalButton onClick={onClose}>
+              {cancelText ?? 'Cancelar'}
+            </ModalButton>
+          }
 
           <ModalButton onClick={goAction} isActionButton>
-            Ir para o Carrinho
+            {goActionText ?? 'OK'}
           </ModalButton>
         </ActionsContainer>
       </ModalContent>
