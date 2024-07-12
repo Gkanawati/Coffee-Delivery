@@ -62,6 +62,7 @@ export const InfoContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   padding: 40px;
   gap: 32px;
   border-radius: 6px 36px;
