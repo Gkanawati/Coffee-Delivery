@@ -10,6 +10,8 @@ import {
   EmptyCartContainer,
   FormStyled,
   HeadTitle,
+  HelperText,
+  InputContainer,
   OptionalField,
   OrderContainer,
   PaymentContainer,
@@ -86,6 +88,13 @@ export default function Checkout() {
       setValue('state', '', { shouldDirty: true });
       return;
     }
+
+    clearErrors('cep');
+    clearErrors('street');
+    clearErrors('number');
+    clearErrors('neighborhood');
+    clearErrors('city');
+    clearErrors('state');
 
     try {
       const apiCepResponse = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
@@ -172,35 +181,46 @@ export default function Checkout() {
               </TitleForm>
 
               <FormStyled>
-                <Controller
-                  name='cep'
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { ref, onChange, ...field } }) => (
-                    <StyledField
-                      {...field}
-                      style={{ width: 'fit-content' }}
-                      placeholder="CEP"
-                      onChange={(e: { target: { value: string; }; }) => {
-                        setValue('cep', maskCEP(e.target.value), { shouldDirty: true })
-                        const unmaskedValue = unmaskValue(e.target.value);
-                        fillAddressInputs(unmaskedValue);
-                      }}
-                    />
-                  )}
-                />
+                <InputContainer>
+                  <Controller
+                    name='cep'
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { ref, onChange, ...field } }) => (
+                      <StyledField
+                        {...field}
+                        style={{ width: 'fit-content' }}
+                        placeholder="CEP"
+                        onChange={(e: { target: { value: string; }; }) => {
+                          console.log(maskCEP(e.target.value));
+                          setValue('cep', maskCEP(e.target.value), { shouldDirty: true })
+                          const unmaskedValue = unmaskValue(e.target.value);
+                          fillAddressInputs(unmaskedValue);
+                        }}
+                      />
+                    )}
+                  />
+                  {errors.cep && <span>{errors.cep.message}</span>}
+                </InputContainer>
 
-                <StyledField
-                  placeholder="Rua"
-                  {...register('street', { required: 'Campo obrigatório' })}
-                />
+                <InputContainer style={{ flex: 1, width: '100%' }}>
+                  <StyledField
+                    style={{ flex: 1 }}
+                    placeholder="Rua"
+                    {...register('street', { required: 'Campo obrigatório' })}
+                  />
+                  {errors.street && <HelperText>{errors.street.message}</HelperText>}
+                </InputContainer>
 
                 <div>
-                  <StyledField
-                    type="number"
-                    placeholder="Número"
-                    {...register('number', { required: 'Campo obrigatório' })}
-                  />
+                  <InputContainer>
+                    <StyledField
+                      type="number"
+                      placeholder="Número"
+                      {...register('number', { required: 'Campo obrigatório' })}
+                    />
+                    {errors.number && <HelperText>{errors.number.message}</HelperText>}
+                  </InputContainer>
 
                   <ContainerInputWithText>
                     <ComplementField
@@ -215,24 +235,33 @@ export default function Checkout() {
                 </div>
 
                 <div>
-                  <StyledField
-                    id="neighborhood"
-                    placeholder="Bairro"
-                    {...register('neighborhood', { required: 'Campo obrigatório' })}
-                  />
+                  <InputContainer>
+                    <StyledField
+                      id="neighborhood"
+                      placeholder="Bairro"
+                      {...register('neighborhood', { required: 'Campo obrigatório' })}
+                    />
+                    {errors.neighborhood && <HelperText>{errors.neighborhood.message}</HelperText>}
+                  </InputContainer>
 
-                  <StyledField
-                    style={{ flex: 1 }}
-                    id="city"
-                    placeholder="Cidade"
-                    {...register('city', { required: 'Campo obrigatório' })}
-                  />
+                  <InputContainer style={{ flex: 1 }}>
+                    <StyledField
+                      style={{ flex: 1 }}
+                      id="city"
+                      placeholder="Cidade"
+                      {...register('city', { required: 'Campo obrigatório' })}
+                    />
+                    {errors.city && <HelperText>{errors.city.message}</HelperText>}
+                  </InputContainer>
 
-                  <StyledField style={{ maxWidth: 60 }}
-                    id="state"
-                    placeholder="UF"
-                    {...register('state', { required: 'Campo obrigatório' })}
-                  />
+                  <InputContainer>
+                    <StyledField style={{ maxWidth: 60 }}
+                      id="state"
+                      placeholder="UF"
+                      {...register('state', { required: 'Campo obrigatório' })}
+                    />
+                    {errors.state && <HelperText>{errors.state.message}</HelperText>}
+                  </InputContainer>
                 </div>
               </FormStyled>
             </CardContainer>

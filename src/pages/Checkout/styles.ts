@@ -97,6 +97,7 @@ export const ContainerInputWithText = styled.div`
   color: ${props => props.theme['base-label']};
   flex: 1;
   position: relative;
+  height: fit-content;
 `;
 
 export const ComplementField = styled.input`
@@ -232,4 +233,21 @@ export const EmptyCartContainer = styled.div`
   a {
     text-decoration: none;
   }
+`;
+
+export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min-content;
+  height: min-content;
+`;
+
+export const HelperText = styled.span`
+  font-size: 0.75rem;
+  color: ${props => props.theme['red']};
+  // permitir que o texto quebre em várias linhas
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  width: 100%;
 `;
