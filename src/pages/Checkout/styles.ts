@@ -73,6 +73,12 @@ export const FormStyled = styled.div`
         flex-wrap: wrap;
       }
     }
+
+    @media (max-width: 575.98px) {
+      & {
+        width: 100%;
+      }
+    }
   }
 `;
 
